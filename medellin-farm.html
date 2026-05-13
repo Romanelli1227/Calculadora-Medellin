@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEDELLÍN — FARM CALC</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{--n:#00ff88;--nd:#00cc66;--nk:#004422;--ng:0 0 8px #00ff8866,0 0 20px #00ff8833;--ngs:0 0 12px #00ff88aa,0 0 30px #00ff8855;--r:#ff3333;--b:#3399ff;--bg:#000;--s:#0a0a0a;--s2:#111}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:#e0e0e0;font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 59px,#00ff8808 60px),
+               repeating-linear-gradient(90deg,transparent,transparent 59px,#00ff8806 60px)}
+  .bebas{font-family:'Bebas Neue',sans-serif}
+  .mono{font-family:'Share Tech Mono',monospace}
+  .neon{color:var(--n);text-shadow:0 0 8px #00ff88aa,0 0 20px #00ff8855}
+  .card{background:var(--s);border:1px solid #00ff8877;box-shadow:var(--ng),inset 0 0 20px #00ff8806;position:relative;overflow:hidden}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--n),transparent)}
+  .pb-bg{background:#0a1a0f;border:1px solid #00ff8822;height:6px;overflow:hidden}
+  .pb-fill{height:100%;background:linear-gradient(90deg,var(--nk),var(--n));box-shadow:0 0 4px var(--n);transition:width .4s ease}
+  .pb-fill.ov{background:linear-gradient(90deg,#004499,var(--b));box-shadow:0 0 4px var(--b)}
+  .pb-fill.ex{background:linear-gradient(90deg,#440099,#aa44ff);box-shadow:0 0 4px #aa44ff}
+  .sdot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
+  .sp{background:var(--r);box-shadow:0 0 6px var(--r)}
+  .sd{background:var(--n);box-shadow:0 0 6px var(--n)}
+  .so{background:var(--b);box-shadow:0 0 6px var(--b)}
+  .btn{background:transparent;border:1px solid var(--nd);color:var(--n);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 18px;cursor:pointer;transition:all .2s}
+  .btn:hover{background:#00ff8815;border-color:var(--n);box-shadow:var(--ng)}
+  .btn:active{transform:scale(.97)}
+  .btn-r{border-color:#ff333366;color:#ff6666}.btn-r:hover{background:#ff000015;border-color:var(--r);box-shadow:0 0 8px #ff333344}
+  .btn-p{border-color:var(--n);background:#00ff8815;box-shadow:var(--ng)}
+  .btn-b{border-color:#3399ff66;color:#3399ff}.btn-b:hover{background:#3399ff15;border-color:var(--b)}
+  .btn-sm{padding:5px 12px;font-size:11px;letter-spacing:1px}
+  input[type=number],input[type=text],input[type=date]{background:#050e08;border:1px solid #00ff8844;color:var(--n);font-family:'Share Tech Mono',monospace;font-size:14px;padding:6px 10px;outline:none;width:100%;transition:border-color .2s}
+  input[type=date]{color-scheme:dark;cursor:pointer}
+  input:focus{border-color:var(--n);box-shadow:0 0 6px #00ff8855}
+  input[type=number]::-webkit-inner-spin-button{opacity:.3;filter:invert(1) hue-rotate(120deg)}
+  .ov{display:none;position:fixed;inset:0;background:#000000dd;z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+  .ov.show{display:flex}
+  .modal{background:var(--s);border:1px solid var(--n);box-shadow:var(--ngs),0 0 60px #00ff8811;padding:24px;width:92%;max-width:560px;position:relative;max-height:90vh;overflow-y:auto}
+  .modal::after{content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--n);border-right:2px solid var(--n)}
+  .modal::before{content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--n);border-left:2px solid var(--n);z-index:1}
+  .rpt{background:#000;border:1px solid #00ff8833;font-family:'Share Tech Mono',monospace;font-size:12px;color:#ccc;padding:12px;white-space:pre;line-height:1.75;overflow-x:auto;max-height:55vh;overflow-y:auto}
+  .sec-t{font-family:'Bebas Neue',sans-serif;letter-spacing:3px;font-size:13px;color:var(--nd);text-transform:uppercase;padding-bottom:5px;border-bottom:1px solid #00ff8822;margin-bottom:12px}
+  .logo-t{font-family:'Bebas Neue',sans-serif;letter-spacing:8px;font-size:clamp(28px,5vw,52px);color:var(--n);text-shadow:0 0 20px #00ff88aa,0 0 50px #00ff8855;line-height:1}
+  .logo-s{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,1.4vw,11px);color:#ffffff55;letter-spacing:4px}
+  .wk-block{background:var(--s2);border:1px solid #00ff8822;padding:14px 16px;margin-bottom:10px;position:relative;overflow:hidden;transition:border-color .2s}
+  .wk-block::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#00ff8844,transparent)}
+  .wk-block.complete{border-color:#00ff8855}
+  .wk-block.partial{border-color:#ffaa0033}
+  .wk-block.empty{border-color:#ff333322}
+  .item-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .item-row:last-child{margin-bottom:0}
+  .cfg-row{display:grid;grid-template-columns:36px 1fr 1fr 80px 32px;gap:6px;align-items:center;margin-bottom:7px}
+  ::-webkit-scrollbar{width:4px;height:4px}
+  ::-webkit-scrollbar-track{background:#000}
+  ::-webkit-scrollbar-thumb{background:#00ff8844}
+  ::-webkit-scrollbar-thumb:hover{background:var(--nd)}
+  .tag{font-family:'Share Tech Mono',monospace;font-size:10px;padding:2px 7px;border:1px solid;letter-spacing:1px}
+  .tag-g{color:var(--n);border-color:#00ff8844;background:#00ff8811}
+  .tag-y{color:#ffaa00;border-color:#ffaa0044;background:#ffaa0011}
+  .tag-r{color:var(--r);border-color:#ff333344;background:#ff333311}
+  .tag-b{color:var(--b);border-color:#3399ff44;background:#3399ff11}
+  @media(max-width:640px){.grid-top{grid-template-columns:1fr!important}.cfg-row{grid-template-columns:32px 1fr 70px 28px!important}}
+</style>
+</head>
+<body>
+<div style="position:relative;z-index:1;min-height:100vh;">
+
+<!-- HEADER -->
+<div style="border-bottom:1px solid #00ff8818;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:#000;">
+  <div>
+    <div class="logo-t">MEDELLÍN</div>
+    <div class="logo-s">◆ FARM CALCULATOR ◆ v5.0 ◆</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <div class="mono" style="font-size:11px;color:#333;" id="clock">—</div>
+    <button class="btn btn-b btn-sm" onclick="openCfg()">✎ CONFIGURAR ITENS</button>
+    <button class="btn btn-sm" onclick="resetAll()">↺ LIMPAR TUDO</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div style="max-width:960px;margin:0 auto;padding:22px 16px;">
+
+  <!-- INPUT PANEL -->
+  <div class="card" style="padding:20px 22px;margin-bottom:24px;">
+    <div class="sec-t">◈ DADOS DO FARM</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;" class="grid-top">
+      <div>
+        <div class="mono" style="font-size:10px;color:#555;letter-spacing:1px;margin-bottom:5px;">NOME DO MEMBRO</div>
+        <input type="text" id="member-name" placeholder="Ex: PABLO" oninput="onInputChange()">
+      </div>
+      <div>
+        <div class="mono" style="font-size:10px;color:#555;letter-spacing:1px;margin-bottom:5px;">DATA DE INÍCIO DO FARM</div>
+        <input type="date" id="start-date" oninput="onInputChange()">
+      </div>
+    </div>
+
+    <div class="sec-t" style="margin-top:4px;">TOTAIS FARMADOS</div>
+    <div id="totals-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:16px;"></div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-p" onclick="calculate()" style="flex:1;min-width:140px;">⚡ CALCULAR</button>
+      <button class="btn btn-b btn-sm" onclick="openReport()" id="btn-report" style="flex:1;min-width:140px;" disabled>◈ GERAR RELATÓRIO</button>
+    </div>
+  </div>
+
+  <!-- RESULT: WEEKS -->
+  <div id="weeks-section" style="display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+      <div>
+        <div class="bebas neon" style="font-size:22px;letter-spacing:3px;" id="result-title">RESULTADO</div>
+        <div class="mono" style="font-size:10px;color:#444;" id="result-sub"></div>
+      </div>
+      <div class="mono" style="font-size:11px;color:#555;" id="result-summary"></div>
+    </div>
+    <div id="weeks-list"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- MODAL: CONFIGURAR ITENS -->
+<div class="ov" id="m-cfg">
+  <div class="modal" style="max-width:600px;">
+    <div class="bebas neon" style="font-size:20px;letter-spacing:4px;margin-bottom:6px;">✎ CONFIGURAR ITENS</div>
+    <div class="mono" style="font-size:10px;color:#444;margin-bottom:14px;">As metas e itens ficam salvos. O farm é sempre zerado.</div>
+    <div style="display:grid;grid-template-columns:36px 1fr 1fr 80px 32px;gap:6px;margin-bottom:6px;">
+      <div class="mono" style="font-size:10px;color:#333;">EMO</div>
+      <div class="mono" style="font-size:10px;color:#333;">NOME</div>
+      <div class="mono" style="font-size:10px;color:#333;">GRUPO</div>
+      <div class="mono" style="font-size:10px;color:#333;">META/SEM</div>
+      <div></div>
+    </div>
+    <div id="cfg-list"></div>
+    <button class="btn btn-b btn-sm" style="width:100%;margin-top:8px;" onclick="addCfgRow()">+ ADICIONAR ITEM</button>
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button class="btn btn-p" onclick="saveCfg()" style="flex:1;">SALVAR</button>
+      <button class="btn btn-r" onclick="closeModal('m-cfg')">CANCELAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: RELATÓRIO -->
+<div class="ov" id="m-report">
+  <div class="modal" style="max-width:580px;">
+    <div class="bebas neon" style="font-size:20px;letter-spacing:4px;margin-bottom:4px;">◈ RELATÓRIO DISCORD</div>
+    <div class="mono" style="font-size:10px;color:#444;margin-bottom:12px;" id="rpt-sub"></div>
+    <div class="rpt" id="rpt-text"></div>
+    <div style="display:flex;gap:10px;margin-top:12px;">
+      <button class="btn btn-p" onclick="copyReport()" style="flex:1;" id="copy-btn">COPIAR</button>
+      <button class="btn" onclick="closeModal('m-report')">FECHAR</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== CONFIG (persisted) ====================
+const DEFAULT_ITEMS = [
+  {key:'diesel',   label:'Diesel',   emoji:'⛽', group:'Combustível', goal:2},
+  {key:'polvora',  label:'Pólvora',  emoji:'💥', group:'Munição',     goal:600},
+  {key:'aluminio', label:'Alumínio', emoji:'🔩', group:'Munição',     goal:600},
+  {key:'aco',      label:'Aço',      emoji:'⚙️',  group:'Munição',    goal:600},
+  {key:'kevlar',   label:'Kevlar',   emoji:'🛡️',  group:'Colete',    goal:300},
+  {key:'tecido',   label:'Tecido',   emoji:'🧵', group:'Colete',     goal:300},
+];
+
+function loadCfg(){ try{return JSON.parse(localStorage.getItem('medellin_cfg')||'null')}catch{return null} }
+function saveCfgStore(items){ localStorage.setItem('medellin_cfg',JSON.stringify(items)) }
+
+let CFG = loadCfg() || DEFAULT_ITEMS.map(i=>({...i}));
+
+function getItems(){ return CFG }
+function getItem(key){ return CFG.find(i=>i.key===key) }
+function getGoal(key){ return getItem(key)?.goal||1 }
+
+// ==================== CALC STATE ====================
+// weekRows: [{wkKey, label, items:{key:{farmado, meta, status, saldo_recebido}}}]
+let weekRows = [];
+let calcDone = false;
+
+// ==================== CLOCK ====================
+function tick(){
+  const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');
+  const days=['DOM','SEG','TER','QUA','QUI','SEX','SAB'];
+  document.getElementById('clock').textContent=`${days[n.getDay()]} ${h}:${m}:${s}`;
+}
+setInterval(tick,1000); tick();
+
+// ==================== WEEK UTILS ====================
+function getMon(date){
+  const d=new Date(date); d.setHours(12,0,0,0);
+  const day=d.getDay(),diff=day===0?-6:1-day;
+  d.setDate(d.getDate()+diff); return d;
+}
+function getFri(date){ const d=getMon(date); d.setDate(d.getDate()+4); return d }
+function wkLabel(mon){
+  const fri=new Date(mon); fri.setDate(fri.getDate()+4);
+  const f=d=>`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+  return `${f(mon)} – ${f(fri)}`
+}
+function fmtDate(d){ return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}) }
+
+// ==================== TOTALS INPUT ====================
+function renderTotalsGrid(){
+  const grid = document.getElementById('totals-grid');
+  grid.innerHTML = CFG.map(item=>`
+    <div>
+      <div class="mono" style="font-size:10px;color:#555;margin-bottom:4px;letter-spacing:1px;">${item.emoji} ${item.label.toUpperCase()}</div>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <input type="number" min="0" id="tot-${item.key}" value="0" placeholder="0" oninput="onInputChange()" style="flex:1;">
+        <div class="mono" style="font-size:10px;color:#333;white-space:nowrap;">/ sem ${item.goal}</div>
+      </div>
+    </div>`).join('');
+}
+
+function onInputChange(){
+  // reset calc when inputs change
+  if(calcDone){
+    calcDone=false;
+    document.getElementById('weeks-section').style.display='none';
+    document.getElementById('btn-report').disabled=true;
+  }
+}
+
+function getTotals(){
+  const t={};
+  CFG.forEach(i=>{ t[i.key]=Math.max(0,parseInt(document.getElementById(`tot-${i.key}`)?.value)||0) });
+  return t;
+}
+
+// ==================== CALCULATE ====================
+function calculate(){
+  const name = document.getElementById('member-name').value.trim().toUpperCase() || 'MEMBRO';
+  const startVal = document.getElementById('start-date').value;
+  if(!startVal){ alert('Selecione a data de início do farm.'); return; }
+
+  const totals = getTotals();
+  const items  = getItems();
+
+  // Find max weeks needed across all items
+  let maxWeeks = 1;
+  items.forEach(i=>{
+    const w = Math.ceil((totals[i.key]||0) / getGoal(i.key));
+    if(w>maxWeeks) maxWeeks=w;
+  });
+  maxWeeks = Math.max(maxWeeks, 1);
+
+  // Build weeks with overflow carry
+  const startMon = getMon(new Date(startVal+'T12:00:00'));
+  weekRows = [];
+  const remaining = {...totals};
+
+  for(let w=0; w<maxWeeks; w++){
+    const mon = new Date(startMon);
+    mon.setDate(mon.getDate() + w*7);
+    const fri = new Date(mon); fri.setDate(fri.getDate()+4);
+
+    const rowItems = {};
+    items.forEach(i=>{
+      const g    = getGoal(i.key);
+      const avail= remaining[i.key]||0;
+      const used = Math.min(avail, g);       // capped at meta
+      const over = Math.max(0, avail - g);   // will carry to next
+      remaining[i.key] = over;
+
+      rowItems[i.key] = {
+        farmado: used,
+        meta:    g,
+        total_input: totals[i.key], // original total for reference
+        status: used >= g ? 'done' : used > 0 ? 'partial' : 'empty',
+      };
+    });
+
+    weekRows.push({ mon, fri, label: wkLabel(mon), items: rowItems });
+  }
+
+  calcDone = true;
+  renderWeeks(name);
+  document.getElementById('btn-report').disabled = false;
+}
+
+// ==================== RENDER WEEKS ====================
+function renderWeeks(name){
+  const sec = document.getElementById('weeks-section');
+  const list = document.getElementById('weeks-list');
+  sec.style.display = 'block';
+
+  const memberName = document.getElementById('member-name').value.trim().toUpperCase() || 'MEMBRO';
+  document.getElementById('result-title').textContent = memberName;
+  document.getElementById('result-sub').textContent = `${weekRows.length} semana(s) calculada(s)`;
+
+  const doneCount = weekRows.filter(w=>Object.values(w.items).every(i=>i.status==='done')).length;
+  document.getElementById('result-summary').textContent = `✅ ${doneCount}/${weekRows.length} semanas completas`;
+
+  list.innerHTML = weekRows.map((wk,idx)=>{
+    const allDone  = Object.values(wk.items).every(i=>i.status==='done');
+    const anyDone  = Object.values(wk.items).some(i=>i.status==='done');
+    const blockCls = allDone?'complete':anyDone?'partial':'empty';
+    const tagCls   = allDone?'tag-g':anyDone?'tag-y':'tag-r';
+    const tagTxt   = allDone?'🟢 COMPLETA':anyDone?'🟡 PARCIAL':'🔴 VAZIA';
+
+    const itemsHTML = Object.entries(wk.items).map(([key,v])=>{
+      const item = getItem(key);
+      const pct  = Math.min((v.farmado/v.meta)*100,100);
+      const stCls= v.status==='done'?'sd':v.status==='partial'?'sp sp':'sp';
+      const col  = v.status==='done'?'var(--n)':v.status==='partial'?'#ffaa00':'#ff3333';
+      return `<div class="item-row">
+        <div class="sdot ${stCls}" style="background:${col};box-shadow:0 0 5px ${col};"></div>
+        <span style="font-size:13px;">${item?.emoji||'🔹'}</span>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;">
+            <span style="font-weight:700;font-size:12px;letter-spacing:.5px;color:#ccc;text-transform:uppercase;">${item?.label||key}</span>
+            <span class="mono" style="font-size:12px;color:${col};">${v.farmado.toLocaleString('pt-BR')}/${v.meta.toLocaleString('pt-BR')}</span>
+          </div>
+          <div class="pb-bg"><div class="pb-fill" style="width:${pct}%;background:linear-gradient(90deg,${col}44,${col});box-shadow:0 0 4px ${col};"></div></div>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="wk-block ${blockCls}" id="wk-block-${idx}">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:#ddd;">SEMANA ${idx+1} &nbsp;·&nbsp; ${wk.label}</div>
+          <div class="mono" style="font-size:10px;color:#444;">${fmtDate(wk.mon)} a ${fmtDate(wk.fri)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="tag ${tagCls}">${tagTxt}</span>
+          <button class="btn btn-sm" style="font-size:10px;padding:4px 10px;" onclick="openWeekEdit(${idx})">✎ AJUSTAR</button>
+        </div>
+      </div>
+      ${itemsHTML}
+    </div>`;
+  }).join('');
+}
+
+// ==================== MANUAL WEEK EDIT ====================
+let editingWk = null;
+
+function openWeekEdit(idx){
+  editingWk = idx;
+  const wk = weekRows[idx];
+  const items = getItems();
+
+  // Build edit modal inline
+  const existing = document.getElementById('m-edit');
+  if(existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.className = 'ov show';
+  modal.id = 'm-edit';
+  modal.innerHTML = `
+    <div class="modal" style="max-width:480px;">
+      <div class="bebas neon" style="font-size:18px;letter-spacing:3px;margin-bottom:4px;">✎ AJUSTE MANUAL</div>
+      <div class="mono" style="font-size:10px;color:#555;margin-bottom:14px;">Semana ${idx+1} · ${wk.label}</div>
+      <div class="mono" style="font-size:10px;color:#444;margin-bottom:10px;">Edite o valor farmado nessa semana. O excedente é redistribuído nas próximas.</div>
+      ${items.map(i=>`
+        <div style="margin-bottom:10px;">
+          <div class="mono" style="font-size:10px;color:#555;margin-bottom:4px;letter-spacing:1px;">${i.emoji} ${i.label.toUpperCase()} · meta: ${i.goal}</div>
+          <input type="number" min="0" id="edit-${i.key}" value="${wk.items[i.key]?.farmado||0}">
+        </div>`).join('')}
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button class="btn btn-p" onclick="applyWeekEdit()" style="flex:1;">APLICAR</button>
+        <button class="btn btn-r" onclick="closeEditModal()">CANCELAR</button>
+      </div>
+    </div>`;
+  modal.addEventListener('click',function(e){if(e.target===this)closeEditModal()});
+  document.body.appendChild(modal);
+}
+
+function closeEditModal(){
+  const m=document.getElementById('m-edit'); if(m)m.remove(); editingWk=null;
+}
+
+function applyWeekEdit(){
+  if(editingWk===null)return;
+  const wk   = weekRows[editingWk];
+  const items= getItems();
+
+  // Read new values for this week
+  items.forEach(i=>{
+    const raw = Math.max(0, parseInt(document.getElementById(`edit-${i.key}`)?.value)||0);
+    const g   = getGoal(i.key);
+    wk.items[i.key].farmado = Math.min(raw, g); // cap at meta
+  });
+
+  // Recalculate carry-forward from this week onwards
+  // First: rebuild totals from week editingWk onward using new farmado values
+  // Carry = what's leftover after this week's cap
+  items.forEach(i=>{
+    const raw = Math.max(0, parseInt(document.getElementById(`edit-${i.key}`)?.value)||0);
+    const g   = getGoal(i.key);
+    let carry = Math.max(0, raw - g);
+
+    // redistribute carry into subsequent weeks
+    for(let w=editingWk+1; w<weekRows.length; w++){
+      const wrow = weekRows[w];
+      const avail = carry;
+      const used  = Math.min(avail, g);
+      carry       = Math.max(0, avail - g);
+      wrow.items[i.key].farmado = used;
+      wrow.items[i.key].status  = used>=g?'done':used>0?'partial':'empty';
+    }
+
+    // If there's still carry after all weeks, add a new week
+    while(carry>0){
+      const lastMon = new Date(weekRows[weekRows.length-1].mon);
+      const newMon  = new Date(lastMon); newMon.setDate(newMon.getDate()+7);
+      const newFri  = new Date(newMon);  newFri.setDate(newFri.getDate()+4);
+      const newRow  = { mon:newMon, fri:newFri, label:wkLabel(newMon), items:{} };
+      items.forEach(ii=>{
+        newRow.items[ii.key]={farmado:0,meta:getGoal(ii.key),status:'empty'};
+      });
+      const used2 = Math.min(carry, g);
+      carry       = Math.max(0, carry-g);
+      newRow.items[i.key]={farmado:used2, meta:g, status:used2>=g?'done':used2>0?'partial':'empty'};
+      weekRows.push(newRow);
+    }
+
+    // Update edited week status
+    wk.items[i.key].status = wk.items[i.key].farmado>=g?'done':wk.items[i.key].farmado>0?'partial':'empty';
+  });
+
+  closeEditModal();
+  const name = document.getElementById('member-name').value.trim().toUpperCase()||'MEMBRO';
+  renderWeeks(name);
+}
+
+// ==================== REPORT ====================
+function buildReport(){
+  const name  = document.getElementById('member-name').value.trim().toUpperCase()||'MEMBRO';
+  const items = getItems();
+  let r = `📋 FARM REPORT — ${name}\n${'═'.repeat(30)}\n`;
+
+  weekRows.forEach((wk,idx)=>{
+    const allDone = Object.values(wk.items).every(i=>i.status==='done');
+    const anyDone = Object.values(wk.items).some(i=>i.status==='done'||i.status==='partial');
+    const tag     = allDone?'🟢 COMPLETA':anyDone?'🟡 PARCIAL':'🔴 VAZIA';
+
+    r += `\n▸ Sem ${idx+1} · ${wk.label} [${tag}]\n`;
+    items.forEach(i=>{
+      const v  = wk.items[i.key];
+      const ok = v.status==='done';
+      const ic = ok?'✅':'❌';
+      r += `${ic} ${i.emoji}${i.label}: ${v.farmado.toLocaleString('pt-BR')}/${v.meta.toLocaleString('pt-BR')}`;
+      if(idx < weekRows.length-1) r += ' ';
+    });
+    r += '\n';
+    if(!allDone){
+      const miss = items.filter(i=>wk.items[i.key].status!=='done');
+      r += `⚠ Falta: ${miss.map(i=>`${i.label} +${(i.goal-wk.items[i.key].farmado).toLocaleString('pt-BR')}`).join(', ')}\n`;
+    }
+    r += `📅 ${fmtDate(wk.fri)}`;
+    if(idx<weekRows.length-1) r += '\n' + '─'.repeat(28);
+  });
+
+  return r;
+}
+
+function openReport(){
+  if(!calcDone||!weekRows.length)return;
+  const name = document.getElementById('member-name').value.trim().toUpperCase()||'MEMBRO';
+  document.getElementById('rpt-sub').textContent=`${weekRows.length} semana(s) · ${name}`;
+  document.getElementById('rpt-text').textContent = buildReport();
+  document.getElementById('copy-btn').textContent='COPIAR';
+  document.getElementById('m-report').classList.add('show');
+}
+
+function copyReport(){
+  const txt=document.getElementById('rpt-text').textContent;
+  const btn=document.getElementById('copy-btn');
+  const done=()=>{btn.textContent='✓ COPIADO!';setTimeout(()=>btn.textContent='COPIAR',2500)};
+  const fail=()=>{
+    const ta=document.createElement('textarea');
+    ta.value=txt; ta.style.cssText='position:fixed;left:-9999px;opacity:0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try{document.execCommand('copy');done()}catch{btn.textContent='ERRO — COPIE MANUAL'}
+    document.body.removeChild(ta); setTimeout(()=>btn.textContent='COPIAR',3000);
+  };
+  if(navigator.clipboard?.writeText) navigator.clipboard.writeText(txt).then(done).catch(fail);
+  else fail();
+}
+
+// ==================== CONFIG MODAL ====================
+let cfgRows=[];
+
+function openCfg(){
+  cfgRows=CFG.map(i=>({...i}));
+  renderCfgList();
+  document.getElementById('m-cfg').classList.add('show');
+}
+function renderCfgList(){
+  document.getElementById('cfg-list').innerHTML=cfgRows.map((item,idx)=>`
+    <div class="cfg-row">
+      <input type="text" value="${item.emoji}" id="ce-${idx}" style="padding:4px;font-size:15px;text-align:center;" maxlength="4">
+      <input type="text" value="${item.label}" id="cl-${idx}" placeholder="Nome">
+      <input type="text" value="${item.group}" id="cg-${idx}" placeholder="Grupo">
+      <input type="number" min="1" value="${item.goal}" id="cm-${idx}" placeholder="Meta">
+      <button onclick="rmCfgRow(${idx})" style="background:transparent;border:1px solid #ff333344;color:#ff4444;font-size:12px;padding:3px 7px;cursor:pointer;" onmouseover="this.style.background='#ff000022'" onmouseout="this.style.background='transparent'">✕</button>
+    </div>`).join('');
+}
+function addCfgRow(){
+  cfgRows.push({key:'item_'+Date.now(),label:'Novo',emoji:'🔹',group:'Geral',goal:100});
+  renderCfgList();
+}
+function rmCfgRow(idx){ cfgRows.splice(idx,1); renderCfgList(); }
+function saveCfg(){
+  const items=cfgRows.map((item,idx)=>({
+    key:  item.key,
+    label:(document.getElementById(`cl-${idx}`)?.value||item.label).trim()||'Item',
+    emoji:(document.getElementById(`ce-${idx}`)?.value||item.emoji).trim()||'🔹',
+    group:(document.getElementById(`cg-${idx}`)?.value||item.group).trim()||'Geral',
+    goal: parseInt(document.getElementById(`cm-${idx}`)?.value)||item.goal||1,
+  }));
+  if(!items.length){alert('Pelo menos 1 item necessário.');return}
+  CFG=items; saveCfgStore(CFG); closeModal('m-cfg');
+  renderTotalsGrid(); resetAll();
+}
+
+// ==================== RESET ====================
+function resetAll(){
+  weekRows=[]; calcDone=false;
+  document.getElementById('member-name').value='';
+  document.getElementById('start-date').value='';
+  document.getElementById('weeks-section').style.display='none';
+  document.getElementById('btn-report').disabled=true;
+  renderTotalsGrid();
+}
+
+// ==================== MODAL ====================
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+document.querySelectorAll('.ov').forEach(el=>{
+  el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('show')});
+});
+
+// ==================== INIT ====================
+renderTotalsGrid();
+// Set today as default date
+document.getElementById('start-date').value = new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>
